@@ -1,20 +1,18 @@
 import requests
 import json
 
-#Got help from chatGPT on options and setup for image detection
+#Got help from chatGPT on this part 
 api_key = ''
 
-# Define the endpoint URL
-def classifyImage():
+def classifyImage(imageUrl: str):
     url = "https://vision.googleapis.com/v1/images:annotate?key={}".format(api_key)
 
-    # Define the request payload
     payload = {
     "requests": [
         {
         "image": {
             "source": {
-            "imageUri": "https://i2.wp.com/www.kuddly.co/wp-content/uploads/2016/02/Dollarphotoclub_87149759.jpg?resize=5184%2C3456"
+            "imageUri": imageUrl
             }
         },
         "features": [
@@ -41,5 +39,4 @@ def classifyImage():
 
     return classificationData
 
-#classifyImage()
 
