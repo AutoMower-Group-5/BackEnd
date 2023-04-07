@@ -3,7 +3,7 @@ import json
 
 #Got help from chatGPT on this part 
 
-api_key = 'AIzaSyDoWlbbE13UTYuh2dk17RKA_sEBuAmnebY'
+api_key = ''
 
 def classifyImage(imageUrl: str):
     url = "https://vision.googleapis.com/v1/images:annotate?key={}".format(api_key)
