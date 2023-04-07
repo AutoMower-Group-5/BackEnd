@@ -21,6 +21,7 @@ def getPositionalData():
     for doc in docs:
         print(f'{doc.id}: {doc.to_dict()}')
         return "{doc_id}: {doc}".format(doc_id = doc.id, doc = doc.to_dict())
+    
 @app.post('/createPath')
 def postPositionalData(mowerPath: MowerPath):
     firestore.writeDataTest(mowerPath.xPath,mowerPath.xValue,mowerPath.yPath,mowerPath.yValue)
@@ -28,3 +29,13 @@ def postPositionalData(mowerPath: MowerPath):
 @app.get('/something')
 def something():
     return { "Data" : "World"}
+
+
+# Should be changed to a post request when hosted.
+@app.get('/writeImage')
+def postImage():
+    return firestore.writeImage()
+
+@app.get('/getImage')
+def getImage():
+    return firestore.readImage()

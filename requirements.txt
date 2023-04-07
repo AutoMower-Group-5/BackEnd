@@ -1,0 +1,4 @@
+google-cloud-storage
+install firebase
+install firebase_admin
+"fastapi[all]
