@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 import firestore
 from pydantic import BaseModel
+import cloudvision
 from typing import Union
 
 class MowerPath(BaseModel):
@@ -9,7 +10,18 @@ class MowerPath(BaseModel):
     xValue: str
     yValue: str
 
+class ImageData(BaseModel):
+    image_url: str
+
 app = FastAPI()
+
+@app.post("/imageClassification")
+async def getImageClassification(image_data: ImageData):
+    image_url = image_data.image_url
+
+    labels = cloudvision.classifyImage(image_url)
+
+    return {"labels": labels}
 
 @app.get("/")
 async def root():
