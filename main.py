@@ -41,3 +41,14 @@ def postPositionalData(mowerPath: MowerPath):
 @app.get('/something')
 def something():
     return { "Data" : "World"}
+
+# Should be changed to a post request when hosted.
+@app.get('/writeImage')
+def postImage():
+    image = "sample_image.jpg"
+    imgLabel = "automower guy"
+    return firestore.writeImage(image, imgLabel)
+
+@app.get('/getImages')
+def getImages():
+    return firestore.readImages()
