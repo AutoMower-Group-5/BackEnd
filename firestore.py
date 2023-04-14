@@ -30,23 +30,33 @@ def readData():
     #     print(f'{doc.id} => {doc.to_dict()}')
     return docs
 
-def writeImage():
-    file_path = "sample_image.jpg"
+def writeImage(img, imgLabel):
+
     bucket = storage.bucket() # storage bucket
     try:
-        blob = bucket.blob(file_path)
-        blob.upload_from_filename(file_path)
+        blob = bucket.blob(img)
+        blob.upload_from_filename(img)
+        blob.make_public()
+        blob.public_url
+
+        doc_ref = db.collection(u'Mower').document(u'MowerSession').collection(u'Images')
+        doc_ref.add({
+            u'Label': imgLabel,
+            u'Url': blob.public_url
+        })
     except:
         return {"Error": "An Error Occured upploading file"}
     else:
         return {"Success": "Succesfully uploaded file"}
-    
-def readImage():
-    file_path = "sample_image.jpg"
-    bucket = storage.bucket() # storage bucket
+
+def readImages():
     try:
-        blob = bucket.blob(file_path)
-        # blob.make_public()
-        return {"Download Url", blob.public_url}
+        users_ref = db.collection(u'Mower').document(u'MowerSession').collection(u'Images')
+        docs = users_ref.stream()
+
+        dict = {}
+        for doc in docs:
+            dict[doc.id] = doc.to_dict()
+        return dict
     except:
-        return {"Error": "An Error Occured upploading file"}
+        return {"Error": "An Error Occured reading images"}
