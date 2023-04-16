@@ -1,1 +1,1 @@
-web: uvicorn main:app --host=0.0.0.0 --port=${PORT:-5000}
+web: uvicorn presentation_layer.main:app --host=0.0.0.0 --port=${PORT:-5000}
