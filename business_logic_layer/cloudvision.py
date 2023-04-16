@@ -1,12 +1,14 @@
 import requests
 import json
+import os
 
 #Got help from chatGPT on this part 
 
-api_key = ''
+google_api_key = os.environ.get('GOOGLE_API_KEY')
+
 
 def classifyImage(imageUrl: str):
-    url = "https://vision.googleapis.com/v1/images:annotate?key={}".format(api_key)
+    url = "https://vision.googleapis.com/v1/images:annotate?key={}".format(google_api_key)
 
     payload = {
     "requests": [
