@@ -30,11 +30,11 @@ def readData():
     #     print(f'{doc.id} => {doc.to_dict()}')
     return docs
 
-def saveImageToStorage(img):
+def saveImageToStorage(img, file_name):
     bucket = storage.bucket() # storage bucket
     try:
-        blob = bucket.blob(img)
-        blob.upload_from_filename(img)
+        blob = bucket.blob(file_name)
+        blob.upload_from_string(img, content_type='image/jpg')
         blob.make_public()
     except:
         return {"URL": ""}
