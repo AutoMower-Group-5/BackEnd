@@ -1,11 +1,13 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
+import base64
+import uuid
 
 import business_logic_layer as BLL
 import data_access_layer as DAL
 
 class ImageData(BaseModel):
-    image_url: str
+    encodedImg: str
 
 image_router = APIRouter(prefix='/image')
 
@@ -18,11 +20,15 @@ async def getImageClassification(image_data: ImageData):
     return {"labels": labels}
 
 # Should be changed to a post request when hosted.
-@image_router.get('/write')
-def postImage():
-    image = "sample_image.jpg"
-    imgLabel = "automower guy"
-    return DAL.writeImage(image, imgLabel)
+@image_router.post('/write')
+def postImage(img: ImageData):
+    imgDecoded = base64.b64decode(img.encodedImg)
+    file_name = str(uuid.uuid4()) + ".jpg"
+
+    imgURL = DAL.saveImageToStorage(imgDecoded, file_name)
+    imgLabel = BLL.classifyImage(imgURL['URL'])
+
+    return DAL.writeImage(imgURL, imgLabel)
 
 @image_router.get('/get')
 def getImages():
