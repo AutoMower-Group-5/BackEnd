@@ -27,9 +27,10 @@ def postImage():
     imgDecoded = base64.b64decode(imgEncoded)
     file_name = str(uuid.uuid4()) + ".jpg"
 
-
     imgURL = DAL.saveImageToStorage(imgDecoded, file_name)
-    imgLabel = "piplup"
+    imgLabel = BLL.classifyImage(imgURL['URL'])
+
+  #  imgLabel = "piplup"
     return DAL.writeImage(imgURL, imgLabel)
 
 @image_router.get('/get')
