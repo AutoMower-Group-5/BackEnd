@@ -8,7 +8,7 @@ google_api_key = os.environ.get('GOOGLE_API_KEY')
 
 
 def classifyImage(imageUrl: str):
-    url = "https://vision.googleapis.com/v1/images:annotate?key={}".format(google_api_key)
+    url = "https://vision.googleapis.com/v1/images:annotate?key={}".format("AIzaSyBy-alFuGtgl2CC3u50736ws1DSl83B5QA")
 
     payload = {
     "requests": [
@@ -39,6 +39,7 @@ def classifyImage(imageUrl: str):
     for label in result["responses"][0]["labelAnnotations"]:
       #  print(label["description"], label["score"])
         label = label["description"]
+        break
     print(classificationData)
 
     return label
