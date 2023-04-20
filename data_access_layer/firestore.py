@@ -30,19 +30,23 @@ def readData():
     #     print(f'{doc.id} => {doc.to_dict()}')
     return docs
 
-def writeImage(img, imgLabel):
-
+def saveImageToStorage(img):
     bucket = storage.bucket() # storage bucket
     try:
         blob = bucket.blob(img)
         blob.upload_from_filename(img)
         blob.make_public()
-        blob.public_url
+    except:
+        return {"URL": ""}
+    else:
+        return {"URL": blob.public_url}
 
+def writeImage(imgUrl, imgLabel):
+    try:
         doc_ref = db.collection(u'Mower').document(u'MowerSession').collection(u'Images')
         doc_ref.add({
             u'Label': imgLabel,
-            u'Url': blob.public_url
+            u'Url': imgUrl
         })
     except:
         return {"Error": "An Error Occured upploading file"}
