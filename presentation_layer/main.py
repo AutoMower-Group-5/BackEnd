@@ -10,9 +10,4 @@ app.include_router(routers.path_router)
 #welcome endpoint to our REST API
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
-
-#test endpoint
-@app.get('/something')
-def something():
-    return { "Data" : "World"}
+    return {"Welcome to our API": "add /docs to the url to access the swagger documentation"}

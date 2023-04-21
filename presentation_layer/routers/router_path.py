@@ -11,13 +11,13 @@ class MowerPath(BaseModel):
 
 path_router = APIRouter(prefix='/path')
 
-@path_router.get('/position')
+@path_router.get('/get')
 def getPositionalData():
     docs = DAL.readData()
     for doc in docs:
         print(f'{doc.id}: {doc.to_dict()}')
         return "{doc_id}: {doc}".format(doc_id = doc.id, doc = doc.to_dict())
     
-@path_router.post('/create')
-def postPositionalData(mowerPath: MowerPath):
+@path_router.post('/save')
+def savePositionalData(mowerPath: MowerPath):
     DAL.writeDataTest(mowerPath.xPath,mowerPath.xValue,mowerPath.yPath,mowerPath.yValue)

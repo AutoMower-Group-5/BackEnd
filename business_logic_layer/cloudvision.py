@@ -34,13 +34,12 @@ def classifyImage(imageUrl: str):
     # Parse the response JSON
     result = json.loads(response.text)
     
-    classificationData = []
+    # classificationData = []
     label = ""
     for label in result["responses"][0]["labelAnnotations"]:
       #  print(label["description"], label["score"])
         label = label["description"]
         break
-    print(classificationData)
 
     return label
 
