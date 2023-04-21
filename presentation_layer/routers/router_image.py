@@ -11,17 +11,17 @@ class ImageData(BaseModel):
 
 image_router = APIRouter(prefix='/image')
 
-@image_router.post("/classification")
-async def getImageClassification(image_data: ImageData):
-    image_url = image_data.image_url
+# @image_router.post("/classification")
+# async def getImageClassification(image_data: ImageData):
+#     image_url = image_data.image_url
 
-    labels = BLL.classifyImage(image_url)
+#     labels = BLL.classifyImage(image_url)
 
-    return {"labels": labels}
+#     return {"labels": labels}
 
 # Should be changed to a post request when hosted.
 @image_router.post('/write')
-def postImage(img: ImageData):
+def saveImage(img: ImageData):
     imgDecoded = base64.b64decode(img.encodedImg)
     file_name = str(uuid.uuid4()) + ".jpg"
 
