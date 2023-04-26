@@ -4,10 +4,8 @@ from pydantic import BaseModel
 import data_access_layer as DAL
 
 class MowerPath(BaseModel):
-    xPath: str
-    yPath: str
-    xValue: str
-    yValue: str
+    x: int
+    y: int
 
 path_router = APIRouter(prefix='/path')
 
@@ -20,4 +18,9 @@ def getPositionalData():
     
 @path_router.post('/save')
 def savePositionalData(mowerPath: MowerPath):
-    DAL.writeDataTest(mowerPath.xPath,mowerPath.xValue,mowerPath.yPath,mowerPath.yValue)
+    DAL.writeDataTest(mowerPath)
+
+@path_router.get('/test')
+def testFunct():
+    docs = DAL.getPositionData()
+    return docs
