@@ -9,6 +9,7 @@ app = firebase_admin.initialize_app(cred, {'storageBucket': 'robot-group5.appspo
 db = firestore.client()
 
 def writePositionData(xPath,yPath):
+    
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
     doc_ref.update({
         'coordinates': firestore.ArrayUnion([{
