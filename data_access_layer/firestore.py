@@ -66,6 +66,7 @@ def readImages():
         return {"Error": "An Error Occured reading images"}
     
 def startSession():
+    #Got help from ChatGPT with start and end session functions
     doc_ref = db.collection('Mower').document()
 
     # create a CollectionReference for the subcollection of images and position
@@ -81,3 +82,11 @@ def startSession():
     doc_ref.set({
         'active': True
 })
+
+def endSession():
+    mowers_ref = db.collection('Mower')
+    active_mower_query = mowers_ref.where('active', '==', True).limit(1)
+    active_mower_docs = active_mower_query.get()
+
+    for doc in active_mower_docs:
+        doc.reference.update({'active': False})
