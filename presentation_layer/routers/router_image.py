@@ -28,7 +28,7 @@ def saveImage(img: ImageData):
     imgURL = DAL.saveImageToStorage(imgDecoded, file_name)
     imgLabel = BLL.classifyImage(imgURL['URL'])
 
-    return DAL.writeImageArray(imgURL, imgLabel)
+    return DAL.writeImage(imgURL, imgLabel)
 
 @image_router.get('/get')
 def getImages():
