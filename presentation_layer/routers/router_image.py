@@ -28,8 +28,8 @@ def saveImage(img: ImageData):
     imgURL = DAL.saveImageToStorage(imgDecoded, file_name)
     imgLabel = BLL.classifyImage(imgURL['URL'])
 
-    return DAL.writeImage(imgURL, imgLabel)
+    return DAL.writeImageArray(imgURL, imgLabel)
 
 @image_router.get('/get')
 def getImages():
-    return DAL.readImages()
+    return DAL.readImagesArray()
