@@ -52,6 +52,24 @@ def writeImage(imgUrl, imgLabel):
         return {"Error": "An Error Occured upploading file"}
     else:
         return {"Success": "Succesfully uploaded file"}
+    
+def writeImageForSession(imgUrl, imgLabel):
+    #Got help from ChatGPT with this function
+    try:
+        mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+        query_result = mower_session_ref.get()
+        if len(query_result) > 0:
+            doc_ref = query_result[0].reference # Get DocumentReference for matching document
+            images_ref = doc_ref.collection(u'Images') # Get CollectionReference for Images subcollection
+            images_ref.add({
+                u'Label': imgLabel,
+                u'Url': imgUrl
+            })
+            return {"Success": "Succesfully uploaded file"}
+        else:
+            return {"Error": "No active sessions found"}
+    except:
+        return {"Error": "An error occurred uploading file"}
 
 def readImages():
     try:
