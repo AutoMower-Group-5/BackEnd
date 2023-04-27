@@ -32,4 +32,4 @@ def saveImage(img: ImageData):
 
 @image_router.get('/get')
 def getImages():
-    return DAL.readImagesArray()
+    return DAL.readImages()
