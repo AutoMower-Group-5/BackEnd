@@ -7,6 +7,7 @@ app = FastAPI()
 app.include_router(routers.image_router)
 app.include_router(routers.path_router)
 app.include_router(routers.session_router)
+app.include_router(routers.collision_router)
 #welcome endpoint to our REST API
 @app.get("/")
 async def root():

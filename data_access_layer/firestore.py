@@ -12,7 +12,7 @@ def writePositionData(xPath,yPath):
     
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
     doc_ref.update({
-        'coordinates': firestore.ArrayUnion([{
+        'path': firestore.ArrayUnion([{
             'x': xPath,
             'y': yPath
         }])
@@ -30,10 +30,29 @@ def readPosition():
     doc = doc_ref.get()
     
     if doc.exists:
-        print(doc.to_dict().get('coordinates'))
-        return doc.to_dict().get('coordinates')
+        print(doc.to_dict().get('path'))
+        return doc.to_dict().get('path')
     else:
         print('No such document!')
+        return None
+    
+def postCollisionCoordinates(xCoordinate, yCoordinate):
+    doc_ref = db.collection(u'Mower').document(u'MowerSession')
+    doc_ref.update({
+        'collision': firestore.ArrayUnion([{
+            'x': xCoordinate,
+            'y': yCoordinate
+        }])
+    })
+
+def getCollisionCoordinates():
+    doc_ref = db.collection(u'Mower').document(u'MowerSession')
+    doc = doc_ref.get()
+    
+    if doc.exists:
+        return doc.to_dict().get('collision')
+    else:
+        print('Document does not exist.')
         return None
 
 # def readData():
