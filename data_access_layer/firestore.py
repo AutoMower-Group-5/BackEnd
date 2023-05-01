@@ -54,6 +54,35 @@ def getCollisionCoordinates():
     else:
         print('Document does not exist.')
         return None
+    
+def postCollisionCoordinatesSession(xCoordinate, yCoordinate):
+    #Got help from ChatGPT with this function
+    try:
+        mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+        query_result = mower_session_ref.get()
+        if len(query_result) > 0:
+            doc_ref = query_result[0].reference # Get DocumentReference for matching document
+            doc_ref.update({
+                    'collision': firestore.ArrayUnion([{
+                        'x': xCoordinate,
+                        'y': yCoordinate
+                    }])
+                })
+            return {"Success": "Succesfully uploaded collision coordinates"}
+        else:
+            return {"Error": "No active sessions found"}
+    except:
+        return {"Error": "An error occurred uploading collision coordinates"}
+    
+def getCollisionCoordinatesSession():
+    mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+    query_result = mower_session_ref.get()
+    
+    for doc in query_result:
+        if doc.exists:
+            return doc.to_dict().get('collision')
+        else:
+            return None
 
 # def readData():
 #     users_ref = db.collection(u'Mower')
@@ -142,13 +171,13 @@ def startSession():
     doc_ref = db.collection('Mower').document()
 
     # create a CollectionReference for the subcollection of images and position
-    subcollection_ref = doc_ref.collection('Images')
-    subcollection_ref1 = doc_ref.collection('Position')
+    # subcollection_ref = doc_ref.collection('Images')
+    # subcollection_ref1 = doc_ref.collection('Position')
 
-    new_doc_ref = subcollection_ref.document().set({
-    })
-    new_doc_ref = subcollection_ref1.document().set({
-    })
+    # new_doc_ref = subcollection_ref.document().set({
+    # })
+    # new_doc_ref = subcollection_ref1.document().set({
+    # })
 
     # add the active attribute to the parent document
     doc_ref.set({
