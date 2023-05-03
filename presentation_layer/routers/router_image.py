@@ -33,3 +33,19 @@ def saveImage(img: ImageData):
 @image_router.get('/get')
 def getImages():
     return DAL.readImages()
+
+@image_router.post('/writeWithSession')
+def saveImage(img: ImageData):
+    imgDecoded = base64.b64decode(img.encodedImg)
+    file_name = str(uuid.uuid4()) + ".jpg"
+
+    imgURL = DAL.saveImageToStorage(imgDecoded, file_name)
+    imgLabel = BLL.classifyImage(imgURL['URL'])
+
+    return DAL.writeImageForSession(imgURL, imgLabel)
+
+@image_router.get('/getWithSession')
+def getImages():
+    return DAL.readImagesForSession()
+
+

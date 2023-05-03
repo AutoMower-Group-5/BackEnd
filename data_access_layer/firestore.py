@@ -8,24 +8,35 @@ cred = credentials.Certificate("serviceAccountKey.json")
 app = firebase_admin.initialize_app(cred, {'storageBucket': 'robot-group5.appspot.com'})
 db = firestore.client()
 
-def writePositionData(xPath,yPath):
+def postPositionData(xCoordinate,yCoordinate):
     
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
     doc_ref.update({
         'path': firestore.ArrayUnion([{
-            'x': xPath,
-            'y': yPath
+            'x': xCoordinate,
+            'y': yCoordinate
         }])
     })
+    
+def postPositionDataSession(xCoordinate,yCoordinate):
+    try:
+        mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+        query_result = mower_session_ref.get()
+        if len(query_result) > 0:
+            doc_ref = query_result[0].reference # Get DocumentReference for matching document
+            doc_ref.update({
+                    'path': firestore.ArrayUnion([{
+                        'x': xCoordinate,
+                        'y': yCoordinate
+                    }])
+                })
+            return {"Success": "Succesfully uploaded path coordinates"}
+        else:
+            return {"Error": "No active sessions found"}
+    except:
+        return {"Error": "An error occurred uploading path coordinates"}
 
-# def writeData():
-#     doc_ref = db.collection(u'Robot').document(u'Position')
-#     doc_ref.set({
-#         u'X': u'5',
-#         u'Y': u'10'
-#     })
-
-def readPosition():
+def getPath():
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
     doc = doc_ref.get()
     
@@ -35,6 +46,16 @@ def readPosition():
     else:
         print('No such document!')
         return None
+
+def getPathSession():
+    mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+    query_result = mower_session_ref.get()
+    
+    for doc in query_result:
+        if doc.exists:
+            return doc.to_dict().get('path')
+        else:
+            return None
     
 def postCollisionCoordinates(xCoordinate, yCoordinate):
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
@@ -54,14 +75,35 @@ def getCollisionCoordinates():
     else:
         print('Document does not exist.')
         return None
-
-# def readData():
-#     users_ref = db.collection(u'Mower')
-#     docs = users_ref.stream()
-
-#     # for doc in docs:
-#     #     print(f'{doc.id} => {doc.to_dict()}')
-#     return docs
+    
+def postCollisionCoordinatesSession(xCoordinate, yCoordinate):
+    #Got help from ChatGPT with this function
+    try:
+        mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+        query_result = mower_session_ref.get()
+        if len(query_result) > 0:
+            doc_ref = query_result[0].reference # Get DocumentReference for matching document
+            doc_ref.update({
+                    'collision': firestore.ArrayUnion([{
+                        'x': xCoordinate,
+                        'y': yCoordinate
+                    }])
+                })
+            return {"Success": "Succesfully uploaded collision coordinates"}
+        else:
+            return {"Error": "No active sessions found"}
+    except:
+        return {"Error": "An error occurred uploading collision coordinates"}
+    
+def getCollisionCoordinatesSession():
+    mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+    query_result = mower_session_ref.get()
+    
+    for doc in query_result:
+        if doc.exists:
+            return doc.to_dict().get('collision')
+        else:
+            return None
 
 def saveImageToStorage(img, file_name):
     bucket = storage.bucket() # storage bucket
@@ -73,27 +115,20 @@ def saveImageToStorage(img, file_name):
         return {"URL": ""}
     else:
         return {"URL": blob.public_url}
-
-# def writeImage(imgUrl, imgLabel):
-#     try:
-#         doc_ref = db.collection(u'Mower').document(u'MowerSession').collection(u'Images')
-#         doc_ref.add({
-#             u'Label': imgLabel,
-#             u'Url': imgUrl
-#         })
-#     except:
-#         return {"Error": "An Error Occured upploading file"}
-#     else:
-#         return {"Success": "Succesfully uploaded file"}
     
 def writeImage(imgUrl, imgLabel):
-    doc_ref = db.collection(u'Mower').document(u'MowerSession')
-    doc_ref.update({
-        'images': firestore.ArrayUnion([{
-            'URL': imgUrl,
-            'Label': imgLabel
-        }])
-    })
+    try:
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc_ref.update({
+            'images': firestore.ArrayUnion([{
+                'URL': imgUrl,
+                'Label': imgLabel
+            }])
+        })
+    except:
+        return {"Error": "An Error Occured upploading file"}
+    else:
+        return {"Success": "Succesfully uploaded file"}
     
 def writeImageForSession(imgUrl, imgLabel):
     #Got help from ChatGPT with this function
@@ -140,19 +175,6 @@ def readImagesForSession():
 def startSession():
     # #Got help from ChatGPT with start and end session functions
     # doc_ref = db.collection('Mower').document()
-
-    # # create a CollectionReference for the subcollection of images and position
-    # subcollection_ref = doc_ref.collection('Images')
-    # subcollection_ref1 = doc_ref.collection('Position')
-
-    # new_doc_ref = subcollection_ref.document().set({
-    # })
-    # new_doc_ref = subcollection_ref1.document().set({
-    # })
-
-    # # add the active attribute to the parent document
-    # doc_ref.set({
-    #     'active': True
 
     doc_ref = db.collection('Mower').document()
 
