@@ -3,7 +3,6 @@ import data_access_layer as DAL
 
 session_router = APIRouter(prefix='/session')
 
-
 @session_router.get('/startSession')
 def startSession():
     DAL.startSession()
