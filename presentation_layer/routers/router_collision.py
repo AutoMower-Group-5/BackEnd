@@ -4,8 +4,8 @@ from pydantic import BaseModel
 import data_access_layer as DAL
 
 class CollisionCoordinates(BaseModel):
-    xCoordinate: int
-    yCoordinate: int
+    xCoordinate: float
+    yCoordinate: float
 
 collision_router = APIRouter(prefix='/collision')
 
