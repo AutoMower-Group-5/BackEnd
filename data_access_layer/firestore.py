@@ -114,18 +114,6 @@ def writeImageForSession(imgUrl, imgLabel):
             return {"Error": "No active sessions found"}
     except:
         return {"Error": "An error occurred uploading file"}
-
-# def readImages():
-#     try:
-#         users_ref = db.collection(u'Mower').document(u'MowerSession').collection(u'Images')
-#         docs = users_ref.stream()
-
-#         dict = {}
-#         for doc in docs:
-#             dict[doc.id] = doc.to_dict()
-#         return dict
-#     except:
-#         return {"Error": "An Error Occured reading images"}
     
 def readImages():
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
@@ -170,7 +158,7 @@ def startSession():
 
     doc_ref.set({
         'images': [],
-        'position': [],
+        'path': [],
         'collision': [],
         'active': True
     })
