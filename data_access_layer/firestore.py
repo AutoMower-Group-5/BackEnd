@@ -102,10 +102,12 @@ def writeImageForSession(imgUrl, imgLabel):
         query_result = mower_session_ref.get()
         if len(query_result) > 0:
             doc_ref = query_result[0].reference # Get DocumentReference for matching document
-            images_ref = doc_ref.collection(u'Images') # Get CollectionReference for Images subcollection
-            images_ref.add({
-                u'Label': imgLabel,
-                u'Url': imgUrl
+            doc_ref.update({
+            'images': firestore.ArrayUnion([{
+                'URL': imgUrl,
+                'Label': imgLabel
+            }])
+
             })
             return {"Success": "Succesfully uploaded file"}
         else:
@@ -136,6 +138,16 @@ def readImages():
         print('No such document!')
         return None
 
+def readImagesForSession():
+    doc_ref = db.collection(u'Mower').where('active', '==', True).limit(1).get()
+    
+    if len(doc_ref) > 0:
+        doc = doc_ref[0].reference.get()
+        print(doc.to_dict().get('images'))
+        return doc.to_dict().get('images')
+    else:
+        print('No such document!')
+        return None
     
 def startSession():
     # #Got help from ChatGPT with start and end session functions
