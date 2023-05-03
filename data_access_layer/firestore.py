@@ -8,16 +8,19 @@ cred = credentials.Certificate("serviceAccountKey.json")
 app = firebase_admin.initialize_app(cred, {'storageBucket': 'robot-group5.appspot.com'})
 db = firestore.client()
 
-def postPositionData(xCoordinate,yCoordinate, angle):
-    
-    doc_ref = db.collection(u'Mower').document(u'MowerSession')
-    doc_ref.update({
-        'path': firestore.ArrayUnion([{
-            'x': xCoordinate,
-            'y': yCoordinate,
-            'angle': angle
-        }])
-    })
+def postPositionData(xCoordinate,yCoordinate,angle):
+    try:
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc_ref.update({
+            'path': firestore.ArrayUnion([{
+                'x': xCoordinate,
+                'y': yCoordinate,
+                'angle': angle
+            }])
+        })
+        return {"Success": "Succesfully uploaded path coordinates"}
+    except:
+        return {"Error": "An error occurred uploading path coordinates"}
     
 def postPositionDataSession(xCoordinate,yCoordinate, angle):
     try:
@@ -34,50 +37,60 @@ def postPositionDataSession(xCoordinate,yCoordinate, angle):
                 })
             return {"Success": "Succesfully uploaded path coordinates"}
         else:
-            return {"Error": "No active sessions found"}
+            return {"Error": "No active session found"}
     except:
         return {"Error": "An error occurred uploading path coordinates"}
 
 def getPath():
-    doc_ref = db.collection(u'Mower').document(u'MowerSession')
-    doc = doc_ref.get()
-    
-    if doc.exists:
-        print(doc.to_dict().get('path'))
-        return doc.to_dict().get('path')
-    else:
-        print('No such document!')
-        return None
-
-def getPathSession():
-    mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
-    query_result = mower_session_ref.get()
-    
-    for doc in query_result:
+    try:
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc = doc_ref.get()
+        
         if doc.exists:
             return doc.to_dict().get('path')
         else:
-            return None
+            return {"Error": "Document containing path coordinates not found"}
+    except:
+        return {"Error": "An error occurred recieving path coordinates"}
+
+def getPathSession():
+    try:
+        mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+        query_result = mower_session_ref.get()
+        
+        for doc in query_result:
+            if doc.exists:
+                return doc.to_dict().get('path')
+            else:
+                return {"Error": "Document containing path coordinates not found"}
+    except:
+        return {"Error": "An error occurred recieving path coordinates"}
     
 def postCollisionCoordinates(xCoordinate, yCoordinate):
-    doc_ref = db.collection(u'Mower').document(u'MowerSession')
-    doc_ref.update({
-        'collision': firestore.ArrayUnion([{
-            'x': xCoordinate,
-            'y': yCoordinate
-        }])
-    })
+    try:
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc_ref.update({
+            'collision': firestore.ArrayUnion([{
+                'x': xCoordinate,
+                'y': yCoordinate
+            }])
+        })
+        return {"Success": "Succesfully uploaded collision coordinates"}
+    except:
+        return {"Error": "An error occurred uploading collision coordinates"}
 
 def getCollisionCoordinates():
-    doc_ref = db.collection(u'Mower').document(u'MowerSession')
-    doc = doc_ref.get()
-    
-    if doc.exists:
-        return doc.to_dict().get('collision')
-    else:
-        print('Document does not exist.')
-        return None
-    
+    try:
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc = doc_ref.get()
+        
+        if doc.exists:
+            return doc.to_dict().get('collision')
+        else:
+            return {"Error": "Document containing collision coordinates not found"}
+    except:
+        return {"Error": "An error occurred recieving collision coordinates"}
+        
 def postCollisionCoordinatesSession(xCoordinate, yCoordinate):
     #Got help from ChatGPT with this function
     try:
@@ -98,15 +111,18 @@ def postCollisionCoordinatesSession(xCoordinate, yCoordinate):
         return {"Error": "An error occurred uploading collision coordinates"}
     
 def getCollisionCoordinatesSession():
-    mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
-    query_result = mower_session_ref.get()
+    try:
+        mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+        query_result = mower_session_ref.get()
+        
+        for doc in query_result:
+            if doc.exists:
+                return doc.to_dict().get('collision')
+            else:
+                return {"Error": "Document containing collision coordinates not found"}
+    except:
+        return {"Error": "An error occurred recieving collision coordinates"}
     
-    for doc in query_result:
-        if doc.exists:
-            return doc.to_dict().get('collision')
-        else:
-            return None
-
 def saveImageToStorage(img, file_name):
     bucket = storage.bucket() # storage bucket
     try:
@@ -127,10 +143,9 @@ def writeImage(imgUrl, imgLabel):
                 'Label': imgLabel
             }])
         })
+        return {"Success": "Succesfully uploaded file"}
     except:
         return {"Error": "An Error Occured upploading file"}
-    else:
-        return {"Success": "Succesfully uploaded file"}
     
 def writeImageForSession(imgUrl, imgLabel):
     #Got help from ChatGPT with this function
@@ -139,58 +154,54 @@ def writeImageForSession(imgUrl, imgLabel):
         query_result = mower_session_ref.get()
         if len(query_result) > 0:
             doc_ref = query_result[0].reference # Get DocumentReference for matching document
-            doc_ref.update({
-            'images': firestore.ArrayUnion([{
-                'URL': imgUrl,
-                'Label': imgLabel
-            }])
-
+            images_ref = doc_ref.collection(u'Images') # Get CollectionReference for Images subcollection
+            images_ref.add({
+                u'Label': imgLabel,
+                u'Url': imgUrl
             })
-            return {"Success": "Succesfully uploaded file"}
+            return {"Success": "Succesfully uploaded image"}
         else:
             return {"Error": "No active sessions found"}
     except:
-        return {"Error": "An error occurred uploading file"}
+        return {"Error": "An error occurred uploading image"}
     
 def readImages():
-    doc_ref = db.collection(u'Mower').document(u'MowerSession')
-    doc = doc_ref.get()
-    
-    if doc.exists:
-        print(doc.to_dict().get('images'))
-        return doc.to_dict().get('images')
-    else:
-        print('No such document!')
-        return None
+    try:    
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc = doc_ref.get()
+        
+        if doc.exists:
+            print(doc.to_dict().get('images'))
+            return doc.to_dict().get('images')
+        else:
+            return {"Error": "Document containing images not found"}
+    except:
+        return {"Error": "An error occurred recieving images"}
 
-def readImagesForSession():
-    doc_ref = db.collection(u'Mower').where('active', '==', True).limit(1).get()
-    
-    if len(doc_ref) > 0:
-        doc = doc_ref[0].reference.get()
-        print(doc.to_dict().get('images'))
-        return doc.to_dict().get('images')
-    else:
-        print('No such document!')
-        return None
     
 def startSession():
-    # #Got help from ChatGPT with start and end session functions
-    # doc_ref = db.collection('Mower').document()
+    try:
+            
+        # #Got help from ChatGPT with start and end session functions
+        doc_ref = db.collection('Mower').document()
 
-    doc_ref = db.collection('Mower').document()
-
-    doc_ref.set({
-        'images': [],
-        'path': [],
-        'collision': [],
-        'active': True
-    })
+        # add the active attribute to the parent document
+        doc_ref.set({
+            'active': True
+        })
+        return {"Success": "Succesfully session started"}
+    except:
+        {"Error": "An error occurred starting session"}
 
 def endSession():
-    mowers_ref = db.collection('Mower')
-    active_mower_query = mowers_ref.where('active', '==', True).limit(1)
-    active_mower_docs = active_mower_query.get()
+    try:
+        mowers_ref = db.collection('Mower')
+        active_mower_query = mowers_ref.where('active', '==', True).limit(1)
+        active_mower_docs = active_mower_query.get()
 
-    for doc in active_mower_docs:
-        doc.reference.update({'active': False})
+        for doc in active_mower_docs:
+            doc.reference.update({'active': False})
+
+        return {"Success": "Succesfully ended session"}
+    except:
+        {"Error": "An error occurred ending session"}

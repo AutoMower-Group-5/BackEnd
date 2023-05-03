@@ -19,8 +19,8 @@ def getCollisionCoordinate():
     
 @collision_router.post('/post')
 def postCollisionCoordinate(collisionCoordinates: CollisionCoordinates):
-    DAL.postCollisionCoordinates(collisionCoordinates.xCoordinate, collisionCoordinates.yCoordinate)
+    return DAL.postCollisionCoordinates(collisionCoordinates.xCoordinate, collisionCoordinates.yCoordinate)
 
 @collision_router.post('/postWithSession')
 def postCollisionCoordinate(collisionCoordinates: CollisionCoordinates):
-    DAL.postCollisionCoordinatesSession(collisionCoordinates.xCoordinate, collisionCoordinates.yCoordinate)
+    return DAL.postCollisionCoordinatesSession(collisionCoordinates.xCoordinate, collisionCoordinates.yCoordinate)
