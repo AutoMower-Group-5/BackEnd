@@ -26,7 +26,7 @@ def saveImage(img: ImageData):
     file_name = str(uuid.uuid4()) + ".jpg"
 
     imgURL = DAL.saveImageToStorage(imgDecoded, file_name)
-    imgLabel = BLL.classifyImage(imgURL['URL'])
+    imgLabel = BLL.classifyImage(imgURL)
 
     return DAL.writeImage(imgURL, imgLabel)
 
@@ -40,7 +40,7 @@ def saveImage(img: ImageData):
     file_name = str(uuid.uuid4()) + ".jpg"
 
     imgURL = DAL.saveImageToStorage(imgDecoded, file_name)
-    imgLabel = BLL.classifyImage(imgURL['URL'])
+    imgLabel = BLL.classifyImage(imgURL)
 
     return DAL.writeImageForSession(imgURL, imgLabel)
 

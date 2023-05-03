@@ -6,6 +6,7 @@ import data_access_layer as DAL
 class MowerPath(BaseModel):
     xPath: float
     yPath: float
+    angle: float
 
 path_router = APIRouter(prefix='/path')
 
@@ -22,8 +23,8 @@ def getPositionalData():
     
 @path_router.post('/save')
 def savePositionalData(mowerPath: MowerPath):
-    DAL.postPositionData(mowerPath.xPath,mowerPath.yPath)
+    DAL.postPositionData(mowerPath.xPath,mowerPath.yPath, mowerPath.angle)
     
 @path_router.post('/post/withsession')
 def savePositionalData(mowerPath: MowerPath):
-    DAL.postPositionDataSession(mowerPath.xPath,mowerPath.yPath)
+    DAL.postPositionDataSession(mowerPath.xPath,mowerPath.yPath, mowerPath.angle)
