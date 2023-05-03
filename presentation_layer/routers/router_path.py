@@ -11,11 +11,19 @@ path_router = APIRouter(prefix='/path')
 
 @path_router.get('/get')
 def getPositionalData():
-    return DAL.readPosition()
+    return DAL.getPath()
  #   for doc in docs:
   #      print(f'{doc.id}: {doc.to_dict()}')
  #       return "{doc_id}: {doc}".format(doc_id = doc.id, doc = doc.to_dict())
+ 
+@path_router.get('/get/withsession')
+def getPositionalData():
+    return DAL.getPathSession()
     
 @path_router.post('/save')
 def savePositionalData(mowerPath: MowerPath):
-    DAL.writePositionData(mowerPath.xPath,mowerPath.yPath)
+    DAL.postPositionData(mowerPath.xPath,mowerPath.yPath)
+    
+@path_router.post('/post/withsession')
+def savePositionalData(mowerPath: MowerPath):
+    DAL.postPositionDataSession(mowerPath.xPath,mowerPath.yPath)

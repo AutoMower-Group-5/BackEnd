@@ -8,15 +8,33 @@ cred = credentials.Certificate("serviceAccountKey.json")
 app = firebase_admin.initialize_app(cred, {'storageBucket': 'robot-group5.appspot.com'})
 db = firestore.client()
 
-def writePositionData(xPath,yPath):
+def postPositionData(xCoordinate,yCoordinate):
     
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
     doc_ref.update({
         'path': firestore.ArrayUnion([{
-            'x': xPath,
-            'y': yPath
+            'x': xCoordinate,
+            'y': yCoordinate
         }])
     })
+    
+def postPositionDataSession(xCoordinate,yCoordinate):
+    try:
+        mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+        query_result = mower_session_ref.get()
+        if len(query_result) > 0:
+            doc_ref = query_result[0].reference # Get DocumentReference for matching document
+            doc_ref.update({
+                    'path': firestore.ArrayUnion([{
+                        'x': xCoordinate,
+                        'y': yCoordinate
+                    }])
+                })
+            return {"Success": "Succesfully uploaded path coordinates"}
+        else:
+            return {"Error": "No active sessions found"}
+    except:
+        return {"Error": "An error occurred uploading path coordinates"}
 
 # def writeData():
 #     doc_ref = db.collection(u'Robot').document(u'Position')
@@ -25,7 +43,7 @@ def writePositionData(xPath,yPath):
 #         u'Y': u'10'
 #     })
 
-def readPosition():
+def getPath():
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
     doc = doc_ref.get()
     
@@ -35,6 +53,16 @@ def readPosition():
     else:
         print('No such document!')
         return None
+
+def getPathSession():
+    mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+    query_result = mower_session_ref.get()
+    
+    for doc in query_result:
+        if doc.exists:
+            return doc.to_dict().get('path')
+        else:
+            return None
     
 def postCollisionCoordinates(xCoordinate, yCoordinate):
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
