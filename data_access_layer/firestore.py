@@ -8,17 +8,18 @@ cred = credentials.Certificate("serviceAccountKey.json")
 app = firebase_admin.initialize_app(cred, {'storageBucket': 'robot-group5.appspot.com'})
 db = firestore.client()
 
-def postPositionData(xCoordinate,yCoordinate):
+def postPositionData(xCoordinate,yCoordinate, angle):
     
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
     doc_ref.update({
         'path': firestore.ArrayUnion([{
             'x': xCoordinate,
-            'y': yCoordinate
+            'y': yCoordinate,
+            'angle': angle
         }])
     })
     
-def postPositionDataSession(xCoordinate,yCoordinate):
+def postPositionDataSession(xCoordinate,yCoordinate, angle):
     try:
         mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
         query_result = mower_session_ref.get()
@@ -27,7 +28,8 @@ def postPositionDataSession(xCoordinate,yCoordinate):
             doc_ref.update({
                     'path': firestore.ArrayUnion([{
                         'x': xCoordinate,
-                        'y': yCoordinate
+                        'y': yCoordinate,
+                        'angle': angle
                     }])
                 })
             return {"Success": "Succesfully uploaded path coordinates"}
@@ -112,9 +114,9 @@ def saveImageToStorage(img, file_name):
         blob.upload_from_string(img, content_type='image/jpg')
         blob.make_public()
     except:
-        return {"URL": ""}
+        return ""
     else:
-        return {"URL": blob.public_url}
+        return blob.public_url
     
 def writeImage(imgUrl, imgLabel):
     try:
