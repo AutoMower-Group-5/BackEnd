@@ -4,8 +4,8 @@ from pydantic import BaseModel
 import data_access_layer as DAL
 
 class MowerPath(BaseModel):
-    xPath: int
-    yPath: int
+    xPath: float
+    yPath: float
 
 path_router = APIRouter(prefix='/path')
 
