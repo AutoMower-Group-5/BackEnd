@@ -138,22 +138,30 @@ def readImages():
 
     
 def startSession():
-    #Got help from ChatGPT with start and end session functions
+    # #Got help from ChatGPT with start and end session functions
+    # doc_ref = db.collection('Mower').document()
+
+    # # create a CollectionReference for the subcollection of images and position
+    # subcollection_ref = doc_ref.collection('Images')
+    # subcollection_ref1 = doc_ref.collection('Position')
+
+    # new_doc_ref = subcollection_ref.document().set({
+    # })
+    # new_doc_ref = subcollection_ref1.document().set({
+    # })
+
+    # # add the active attribute to the parent document
+    # doc_ref.set({
+    #     'active': True
+
     doc_ref = db.collection('Mower').document()
 
-    # create a CollectionReference for the subcollection of images and position
-    subcollection_ref = doc_ref.collection('Images')
-    subcollection_ref1 = doc_ref.collection('Position')
-
-    new_doc_ref = subcollection_ref.document().set({
-    })
-    new_doc_ref = subcollection_ref1.document().set({
-    })
-
-    # add the active attribute to the parent document
     doc_ref.set({
+        'images': [],
+        'position': [],
+        'collision': [],
         'active': True
-})
+    })
 
 def endSession():
     mowers_ref = db.collection('Mower')
