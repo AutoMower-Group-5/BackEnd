@@ -9,33 +9,30 @@ app = firebase_admin.initialize_app(cred, {'storageBucket': 'robot-group5.appspo
 db = firestore.client()
 
 def writePositionData(xPath,yPath):
-    
-    doc_ref = db.collection(u'Mower').document(u'MowerSession')
-    doc_ref.update({
-        'path': firestore.ArrayUnion([{
-            'x': xPath,
-            'y': yPath
-        }])
-    })
-
-# def writeData():
-#     doc_ref = db.collection(u'Robot').document(u'Position')
-#     doc_ref.set({
-#         u'X': u'5',
-#         u'Y': u'10'
-#     })
+    try:
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc_ref.update({
+            'path': firestore.ArrayUnion([{
+                'x': xPath,
+                'y': yPath
+            }])
+        })
+    except:
+        return {"Error": "An error occurred uploading path"}
 
 def readPosition():
-    doc_ref = db.collection(u'Mower').document(u'MowerSession')
-    doc = doc_ref.get()
-    
-    if doc.exists:
-        print(doc.to_dict().get('path'))
-        return doc.to_dict().get('path')
-    else:
-        print('No such document!')
-        return None
-    
+    try:
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc = doc_ref.get()
+        
+        if doc.exists:
+            print(doc.to_dict().get('path'))
+            return doc.to_dict().get('path')
+        else:
+            return {"Error": "Document doesnt exist"}
+    except:
+        return {"Error": "An error occurred reading path"}
+        
 def postCollisionCoordinates(xCoordinate, yCoordinate):
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
     doc_ref.update({
@@ -55,14 +52,6 @@ def getCollisionCoordinates():
         print('Document does not exist.')
         return None
 
-# def readData():
-#     users_ref = db.collection(u'Mower')
-#     docs = users_ref.stream()
-
-#     # for doc in docs:
-#     #     print(f'{doc.id} => {doc.to_dict()}')
-#     return docs
-
 def saveImageToStorage(img, file_name):
     bucket = storage.bucket() # storage bucket
     try:
@@ -73,18 +62,6 @@ def saveImageToStorage(img, file_name):
         return {"URL": ""}
     else:
         return {"URL": blob.public_url}
-
-# def writeImage(imgUrl, imgLabel):
-#     try:
-#         doc_ref = db.collection(u'Mower').document(u'MowerSession').collection(u'Images')
-#         doc_ref.add({
-#             u'Label': imgLabel,
-#             u'Url': imgUrl
-#         })
-#     except:
-#         return {"Error": "An Error Occured upploading file"}
-#     else:
-#         return {"Success": "Succesfully uploaded file"}
     
 def writeImage(imgUrl, imgLabel):
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
@@ -111,19 +88,7 @@ def writeImageForSession(imgUrl, imgLabel):
         else:
             return {"Error": "No active sessions found"}
     except:
-        return {"Error": "An error occurred uploading file"}
-
-# def readImages():
-#     try:
-#         users_ref = db.collection(u'Mower').document(u'MowerSession').collection(u'Images')
-#         docs = users_ref.stream()
-
-#         dict = {}
-#         for doc in docs:
-#             dict[doc.id] = doc.to_dict()
-#         return dict
-#     except:
-#         return {"Error": "An Error Occured reading images"}
+        return {"Error": "An error occurred uploading image"}
     
 def readImages():
     doc_ref = db.collection(u'Mower').document(u'MowerSession')
@@ -133,7 +98,6 @@ def readImages():
         print(doc.to_dict().get('images'))
         return doc.to_dict().get('images')
     else:
-        print('No such document!')
         return None
 
     
