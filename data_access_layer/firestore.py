@@ -154,16 +154,30 @@ def writeImageForSession(imgUrl, imgLabel):
         query_result = mower_session_ref.get()
         if len(query_result) > 0:
             doc_ref = query_result[0].reference # Get DocumentReference for matching document
-            images_ref = doc_ref.collection(u'Images') # Get CollectionReference for Images subcollection
-            images_ref.add({
-                u'Label': imgLabel,
-                u'Url': imgUrl
-            })
+            doc_ref.update({
+                    'images': firestore.ArrayUnion([{
+                        u'Label': imgLabel,
+                        u'Url': imgUrl
+                    }])
+                })
             return {"Success": "Succesfully uploaded image"}
         else:
             return {"Error": "No active sessions found"}
     except:
         return {"Error": "An error occurred uploading image"}
+    
+def getImagesSession():
+    try:
+        mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
+        query_result = mower_session_ref.get()
+        
+        for doc in query_result:
+            if doc.exists:
+                return doc.to_dict().get('images')
+            else:
+                return {"Error": "Document containing collision coordinates not found"}
+    except:
+        return {"Error": "An error occurred recieving collision coordinates"}
     
 def readImages():
     try:    
