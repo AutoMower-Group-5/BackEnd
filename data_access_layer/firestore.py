@@ -166,7 +166,7 @@ def writeImageForSession(imgUrl, imgLabel):
     except:
         return {"Error": "An error occurred uploading image"}
     
-def getImagesSession():
+def readImagesForSession():
     try:
         mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
         query_result = mower_session_ref.get()
