@@ -11,41 +11,37 @@ class ImageData(BaseModel):
 
 image_router = APIRouter(prefix='/image')
 
-# @image_router.post("/classification")
-# async def getImageClassification(image_data: ImageData):
-#     image_url = image_data.image_url
-
-#     labels = BLL.classifyImage(image_url)
-
-#     return {"labels": labels}
-
-# Should be changed to a post request when hosted.
-@image_router.post('/write')
-def saveImage(img: ImageData):
-    imgDecoded = base64.b64decode(img.encodedImg)
-    file_name = str(uuid.uuid4()) + ".jpg"
-
-    imgURL = DAL.saveImageToStorage(imgDecoded, file_name)
-    imgLabel = BLL.classifyImage(imgURL)
-
-    return DAL.writeImage(imgURL, imgLabel)
 
 @image_router.get('/get')
 def getImages():
     return DAL.readImages()
 
-@image_router.post('/writeWithSession')
-def saveImage(img: ImageData):
+# Should be changed to a post request when hosted.
+@image_router.post('/post')
+def postImage(img: ImageData):
     imgDecoded = base64.b64decode(img.encodedImg)
     file_name = str(uuid.uuid4()) + ".jpg"
 
-    imgURL = DAL.saveImageToStorage(imgDecoded, file_name)
+    imgURL = DAL.uploadImageToStorage(imgDecoded, file_name)
     imgLabel = BLL.classifyImage(imgURL)
 
-    return DAL.writeImageForSession(imgURL, imgLabel)
+    return DAL.writeImage(imgURL, imgLabel)
 
-@image_router.get('/getWithSession')
+# Session functions below
+
+
+@image_router.get('/session/get')
 def getImages():
-    return DAL.readImagesForSession()
+    return DAL.readImagesSession()
+
+@image_router.post('/session/post')
+def postImage(img: ImageData):
+    imgDecoded = base64.b64decode(img.encodedImg)
+    file_name = str(uuid.uuid4()) + ".jpg"
+
+    imgURL = DAL.uploadImageToStorage(imgDecoded, file_name)
+    imgLabel = BLL.classifyImage(imgURL)
+
+    return DAL.writeImageSession(imgURL, imgLabel)
 
 

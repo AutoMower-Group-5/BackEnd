@@ -4,25 +4,26 @@ from pydantic import BaseModel
 import data_access_layer as DAL
 
 class MowerPath(BaseModel):
-    xPath: float
-    yPath: float
+    xCoordinate: float
+    yCoordinate: float
     angle: float
 
 path_router = APIRouter(prefix='/path')
 
 @path_router.get('/get')
-def getPositionalData():
-    return DAL.getPath()
- 
-@path_router.get('/get/withsession')
-def getPositionalData():
-    return DAL.getPathSession()
-    
-@path_router.post('/save')
-def savePositionalData(mowerPath: MowerPath):
-    return DAL.postPositionData(mowerPath.xPath,mowerPath.yPath, mowerPath.angle)
+def getPosition():
+    return DAL.readPath()
 
-    
-@path_router.post('/post/withsession')
-def savePositionalData(mowerPath: MowerPath):
-    return DAL.postPositionDataSession(mowerPath.xPath,mowerPath.yPath, mowerPath.angle)
+@path_router.post('/post')
+def postPosition(mowerPath: MowerPath):
+    return DAL.writePath(mowerPath.xCoordinate, mowerPath.yCoordinate, mowerPath.angle)
+
+# Session functions below
+ 
+@path_router.get('/session/get')
+def getPosition():
+    return DAL.readPathSession()
+
+@path_router.post('/session/post')
+def postPosition(mowerPath: MowerPath):
+    return DAL.writePathSession(mowerPath.xCoordinate, mowerPath.yCoordinate, mowerPath.angle)
