@@ -8,7 +8,7 @@ cred = credentials.Certificate("serviceAccountKey.json")
 app = firebase_admin.initialize_app(cred, {'storageBucket': 'robot-group5.appspot.com'})
 db = firestore.client()
 
-def postPositionData(xCoordinate,yCoordinate,angle):
+def writePath(xCoordinate, yCoordinate, angle):
     try:
         doc_ref = db.collection(u'Mower').document(u'MowerSession')
         doc_ref.update({
@@ -22,7 +22,19 @@ def postPositionData(xCoordinate,yCoordinate,angle):
     except:
         return {"Error": "An error occurred uploading path coordinates"}
     
-def postPositionDataSession(xCoordinate,yCoordinate, angle):
+def readPath():
+    try:
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc = doc_ref.get()
+        
+        if doc.exists:
+            return doc.to_dict().get('path')
+        else:
+            return {"Error": "Document containing path coordinates not found"}
+    except:
+        return {"Error": "An error occurred recieving path coordinates"}
+    
+def writePathSession(xCoordinate, yCoordinate, angle):
     try:
         mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
         query_result = mower_session_ref.get()
@@ -41,19 +53,7 @@ def postPositionDataSession(xCoordinate,yCoordinate, angle):
     except:
         return {"Error": "An error occurred uploading path coordinates"}
 
-def getPath():
-    try:
-        doc_ref = db.collection(u'Mower').document(u'MowerSession')
-        doc = doc_ref.get()
-        
-        if doc.exists:
-            return doc.to_dict().get('path')
-        else:
-            return {"Error": "Document containing path coordinates not found"}
-    except:
-        return {"Error": "An error occurred recieving path coordinates"}
-
-def getPathSession():
+def readPathSession():
     try:
         mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
         query_result = mower_session_ref.get()
@@ -66,7 +66,7 @@ def getPathSession():
     except:
         return {"Error": "An error occurred recieving path coordinates"}
     
-def postCollisionCoordinates(xCoordinate, yCoordinate):
+def writeCollision(xCoordinate, yCoordinate):
     try:
         doc_ref = db.collection(u'Mower').document(u'MowerSession')
         doc_ref.update({
@@ -79,7 +79,7 @@ def postCollisionCoordinates(xCoordinate, yCoordinate):
     except:
         return {"Error": "An error occurred uploading collision coordinates"}
 
-def getCollisionCoordinates():
+def readCollision():
     try:
         doc_ref = db.collection(u'Mower').document(u'MowerSession')
         doc = doc_ref.get()
@@ -91,7 +91,7 @@ def getCollisionCoordinates():
     except:
         return {"Error": "An error occurred recieving collision coordinates"}
         
-def postCollisionCoordinatesSession(xCoordinate, yCoordinate):
+def writeCollisionSession(xCoordinate, yCoordinate):
     #Got help from ChatGPT with this function
     try:
         mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
@@ -110,7 +110,7 @@ def postCollisionCoordinatesSession(xCoordinate, yCoordinate):
     except:
         return {"Error": "An error occurred uploading collision coordinates"}
     
-def getCollisionCoordinatesSession():
+def readCollisionSession():
     try:
         mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
         query_result = mower_session_ref.get()
@@ -123,7 +123,7 @@ def getCollisionCoordinatesSession():
     except:
         return {"Error": "An error occurred recieving collision coordinates"}
     
-def saveImageToStorage(img, file_name):
+def uploadImageToStorage(img, file_name):
     bucket = storage.bucket() # storage bucket
     try:
         blob = bucket.blob(file_name)
@@ -147,7 +147,20 @@ def writeImage(imgUrl, imgLabel):
     except:
         return {"Error": "An Error Occured upploading file"}
     
-def writeImageForSession(imgUrl, imgLabel):
+def readImages():
+    try:    
+        doc_ref = db.collection(u'Mower').document(u'MowerSession')
+        doc = doc_ref.get()
+        
+        if doc.exists:
+            print(doc.to_dict().get('images'))
+            return doc.to_dict().get('images')
+        else:
+            return {"Error": "Document containing images not found"}
+    except:
+        return {"Error": "An error occurred recieving images"}
+    
+def writeImageSession(imgUrl, imgLabel):
     #Got help from ChatGPT with this function
     try:
         mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
@@ -166,7 +179,7 @@ def writeImageForSession(imgUrl, imgLabel):
     except:
         return {"Error": "An error occurred uploading image"}
     
-def readImagesForSession():
+def readImagesSession():
     try:
         mower_session_ref = db.collection(u'Mower').where('active', '==', True).limit(1)
         query_result = mower_session_ref.get()
@@ -178,20 +191,6 @@ def readImagesForSession():
                 return {"Error": "Document containing collision coordinates not found"}
     except:
         return {"Error": "An error occurred recieving collision coordinates"}
-    
-def readImages():
-    try:    
-        doc_ref = db.collection(u'Mower').document(u'MowerSession')
-        doc = doc_ref.get()
-        
-        if doc.exists:
-            print(doc.to_dict().get('images'))
-            return doc.to_dict().get('images')
-        else:
-            return {"Error": "Document containing images not found"}
-    except:
-        return {"Error": "An error occurred recieving images"}
-
     
 def startSession():
     try:
