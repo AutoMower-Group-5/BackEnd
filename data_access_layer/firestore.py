@@ -191,6 +191,17 @@ def readImagesSession():
                 return {"Error": "Document containing collision coordinates not found"}
     except:
         return {"Error": "An error occurred recieving collision coordinates"}
+
+def checkForSession():
+    try:
+        sessions = db.collection('Mower').where('active', '==', True).limit(1).get()
+
+        if sessions:
+            return True
+        else:
+            return False
+    except:
+        return False
     
 def startSession():
     try:
