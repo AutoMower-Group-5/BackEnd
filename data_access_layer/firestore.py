@@ -212,7 +212,7 @@ def startSession():
         # add the active attribute to the parent document
         doc_ref.set({
             'images': [],
-            'position': [],
+            'path': [],
             'collision': [],
             'active': True
         })
